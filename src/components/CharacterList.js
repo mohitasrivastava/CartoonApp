@@ -4,8 +4,14 @@ import { Character } from './Character';
 function NavPage({ page, setPage }) {
   return (
     <header className="d-flex justify-content-between align-items-center">
-      <p>Page: {page}</p>
+      {/* <p>Page: {page}</p> */}
 
+      <button
+        className="btn btn-primary btn-sm"
+        onClick={() => setPage(page - 1)}
+      >
+        Page {page}
+      </button>
       <button
         className="btn btn-primary btn-sm"
         onClick={() => setPage(page + 1)}
@@ -19,18 +25,25 @@ function NavPage({ page, setPage }) {
 export function CharacterList() {
   const [loading, setLoading] = useState(true);
   const [characters, setCharacters] = useState([]);
-  const [page, setPage] = useState(1);
-  const [episode, setEpisode] = useState(null);
+  const [error, setError] = useState();
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await fetch(
-        `https://rickandmortyapi.com/api/character?page=${page}`
-      );
-      const { results } = await data.json();
-      console.log(results, 'result');
-      setCharacters(results);
-      setLoading(false);
+      setLoading(true);
+
+      try {
+        const data = await fetch(
+          `https://rickandmortyapi.com/api/character?page=${page}`
+        );
+        const { results } = await data.json();
+        console.log(results, 'result');
+        setCharacters(results);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, [page]);
